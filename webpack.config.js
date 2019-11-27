@@ -6,7 +6,17 @@ module.exports = {
     entry: './src/app.jsx',
     output: {
         path: path.resolve(__dirname, 'dist'),
-        filename: 'app.js'
+        filename: 'app.js',
+        
+    },
+    resolve: {
+        alias: {
+            components: path.resolve(__dirname, 'src/components'),
+           // components:'./src/components'
+           page:path.resolve(__dirname, 'src/page'),
+           util:path.resolve(__dirname, 'src/util'),
+           service:path.resolve(__dirname, 'src/service'),
+        }
     },
     module: {
         rules: [{
@@ -15,7 +25,9 @@ module.exports = {
                 use: {
                     loader: 'babel-loader',
                     options: {
-                        presets: ['@babel/preset-env', '@babel/preset-react']
+                        
+                        presets: [ "@babel/preset-env", "@babel/preset-react" ],
+                        plugins: [ "@babel/plugin-transform-arrow-functions", "@babel/plugin-proposal-class-properties" ]
                     }
                 }
             },
@@ -68,9 +80,10 @@ module.exports = {
         ]
     },
     plugins: [
-         // 处理html文件 
+        // 处理html文件 
         new HtmlWebpackPlugin({
-            template: './src/index.html'
+            template: './src/index.html',
+            favicon:'./src/gift/image/react.png'
         }),
         // 独立css文件
         new MiniCssExtractPlugin({
@@ -94,7 +107,28 @@ module.exports = {
 
     devServer: {
         contentBase: path.join(__dirname, "dist"),
+        historyApiFallback:{
 
-      }
+			rewrites: [{
+
+				from: /.*/g,
+
+				to: '/page/index.html'
+
+			}]
+
+		},
+        proxy : {
+            '/manage' : {
+                target: 'http://admintest.happymmall.com',
+                changeOrigin : true
+            },
+            '/user/logout.do' : {
+                target: 'http://admintest.happymmall.com',
+                changeOrigin : true
+            }
+        }
+
+    }
 
 };
